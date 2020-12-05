@@ -9,7 +9,7 @@ struct Horizontal {
     row: [Cell; CELL_WIDTH]
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, std::cmp::PartialEq)]
 enum Cell {
     Empty,
     Tree
@@ -54,10 +54,32 @@ fn main() -> Result<(), Error>{
     for line in lines {
         if let Ok(ip) = line {
             let horizontal = Horizontal::new(ip);
-            hill.push(horizontal);
-            
+            hill.push(horizontal);   
         }
     }
 
+    let mut hits = 0;
+    let mut horiz_posn = 0;
+
+    let vert: [u32; 5] = [1, 1, 1, 1, 2];
+    let horiz: [u32; 5] = [1, 3, 5, 7, 1];
+    let mut total: u64 = 1;
+    for (horiz_step, vert_step) in horiz.iter().zip(vert.iter()) {
+
+    
+        for row_idx in (*vert_step as usize..hill.len() as usize).step_by(*vert_step as usize) {
+            horiz_posn += *horiz_step as usize;
+            if hill[row_idx][horiz_posn] == Cell::Tree {
+                hits += 1;
+            }
+        }
+
+        horiz_posn = 0;
+        total *= hits;
+        hits = 0
+
+    }
+
+    println! ("There were {} hits.", total);
     Ok(())
 }
